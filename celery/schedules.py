@@ -29,7 +29,7 @@ from dateutil.rrule import (
 
 __all__ = (
     'ParseException', 'schedule', 'crontab', 'crontab_parser',
-    'maybe_schedule', 'solar', 'rrule'
+    'maybe_schedule', 'rrule', 'solar'
 )
 
 schedstate = namedtuple('schedstate', ('is_due', 'next'))
