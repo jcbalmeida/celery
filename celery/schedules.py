@@ -854,6 +854,7 @@ class solar(BaseSchedule):
 @python_2_unicode_compatible
 class rrule(BaseSchedule):
     """iCalendar-based schedule."""
+
     RRULE_REPR = (
         '<rrule: freq: {0.freq}, dtstart: {0.dtstart}, '
         'interval: {0.interval}, wkst: {0.wkst}, count: {0.count}, '
