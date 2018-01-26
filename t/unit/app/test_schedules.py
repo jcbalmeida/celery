@@ -10,8 +10,8 @@ import pytz
 from case import Case, Mock, skip
 
 from celery.five import items
-from celery.schedules import (ParseException, crontab, crontab_parser,
-                              schedule, solar, rrule)
+from celery.schedules import (ParseException, crontab, crontab_parser, rrule,
+                              schedule, solar)
 
 assertions = Case('__init__')
 
