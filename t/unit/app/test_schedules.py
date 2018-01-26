@@ -11,7 +11,7 @@ from case import Case, Mock, skip
 
 from celery.five import items
 from celery.schedules import (ParseException, crontab, crontab_parser,
-                              schedule, solar)
+                              schedule, solar, rrule)
 
 assertions = Case('__init__')
 
@@ -803,3 +803,79 @@ class test_crontab_is_due:
             due, remaining = self.yearly.is_due(datetime(2009, 3, 12, 7, 30))
             assert not due
             assert remaining == 4 * 24 * 60 * 60 - 3 * 60 * 60
+
+
+class test_rrule_remaining_estimate:
+
+    def rrule(self, *args, **kwargs):
+        r = rrule(*args, app=self.app, **kwargs)
+        r.now = datetime.utcnow
+        r.utc_enabled = True
+        return r
+
+    def test_freq(self):
+        r = self.rrule(str('MINUTELY'), dtstart=datetime.utcnow() + timedelta(minutes=1))
+        eta_from_now = r.remaining_estimate(datetime.utcnow())
+        eta_after_one_minute = r.remaining_estimate(datetime.utcnow() + timedelta(minutes=1))
+        assert eta_from_now.total_seconds() > 0
+        assert eta_after_one_minute.total_seconds() > 0
+
+    def test_freq__with_single_count(self):
+        r = self.rrule(str('MINUTELY'), dtstart=datetime.utcnow() + timedelta(minutes=1), count=1)
+        eta_from_now = r.remaining_estimate(datetime.utcnow())
+        eta_after_one_minute = r.remaining_estimate(datetime.utcnow() + timedelta(minutes=1))
+        assert eta_from_now.total_seconds > 0
+        assert eta_after_one_minute is None
+
+    def test_freq__with_multiple_count(self):
+        r = self.rrule(str('MINUTELY'), dtstart=datetime.utcnow() + timedelta(minutes=1), count=2)
+        eta_from_now = r.remaining_estimate(datetime.utcnow())
+        eta_after_one_minute = r.remaining_estimate(datetime.utcnow() + timedelta(minutes=1))
+        eta_after_two_minutes = r.remaining_estimate(datetime.utcnow() + timedelta(minutes=2))
+        assert eta_from_now.total_seconds() > 0
+        assert eta_after_one_minute.total_seconds() > 0
+        assert eta_after_two_minutes is None
+
+
+class test_rrule_is_due:
+
+    def rrule(self, *args, **kwargs):
+        r = rrule(*args, app=self.app, **kwargs)
+        r.now = datetime.utcnow
+        r.utc_enabled = True
+        return r
+
+    def test_freq__starting_now(self):
+        r = self.rrule(str('MINUTELY'), dtstart=datetime.utcnow())
+        is_due, next = r.is_due(datetime(1970, 1, 1))
+        assert is_due
+        assert next > 0
+
+    def test_freq__starts_after_one_minute(self):
+        r = self.rrule(str('MINUTELY'), dtstart=datetime.utcnow() + timedelta(minutes=1))
+        is_due, next = r.is_due(datetime.utcnow())
+        assert not is_due
+        assert next > 0
+
+    def test_freq__with_single_count(self):
+        r = self.rrule(str('MINUTELY'), dtstart=datetime.now(), count=1)
+        is_due, next = r.is_due(datetime(1970, 1, 1))
+        assert is_due
+        assert next is None
+        is_due, next = r.is_due(datetime.utcnow())
+        assert not is_due
+        assert next is None
+
+    def test_freq__with_multiple_count(self):
+        r = self.rrule(str('MINUTELY'), dtstart=datetime.utcnow(), count=2)
+        is_due, next = r.is_due(datetime(1970, 1, 1))
+        assert is_due
+        assert next > 0
+
+        is_due, nect = r.is_due(datetime.utcnow())
+        assert not is_due
+        assert next > 0
+
+        is_due, next = r.is_due(datetime.utcnow() + timedelta(minutes=1))
+        assert not is_due
+        assert next is None
