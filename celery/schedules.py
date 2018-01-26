@@ -883,7 +883,6 @@ class rrule(BaseSchedule):
 
         if type(freq) == str:
             freq_str = freq.upper()
-            assert freq_str in rrule.FREQ_MAP
             freq = rrule.FREQ_MAP[freq_str]
 
         dtstart = self.maybe_make_aware(dtstart) if dtstart else \
