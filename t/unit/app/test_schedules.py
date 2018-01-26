@@ -814,24 +814,28 @@ class test_rrule_remaining_estimate:
         return r
 
     def test_freq(self):
-        r = self.rrule(str('MINUTELY'), dtstart=datetime.utcnow() + timedelta(minutes=1))
+        one_minute_later = datetime.utcnow() + timedelta(minutes=1)
+        r = self.rrule(str('MINUTELY'), dtstart=one_minute_later)
         eta_from_now = r.remaining_estimate(datetime.utcnow())
-        eta_after_one_minute = r.remaining_estimate(datetime.utcnow() + timedelta(minutes=1))
+        eta_after_one_minute = r.remaining_estimate(one_minute_later)
         assert eta_from_now.total_seconds() > 0
         assert eta_after_one_minute.total_seconds() > 0
 
     def test_freq__with_single_count(self):
-        r = self.rrule(str('MINUTELY'), dtstart=datetime.utcnow() + timedelta(minutes=1), count=1)
+        one_minute_later = datetime.utcnow() + timedelta(minutes=1)
+        r = self.rrule(str('MINUTELY'), dtstart=one_minute_later, count=1)
         eta_from_now = r.remaining_estimate(datetime.utcnow())
-        eta_after_one_minute = r.remaining_estimate(datetime.utcnow() + timedelta(minutes=1))
+        eta_after_one_minute = r.remaining_estimate(one_minute_later)
         assert eta_from_now.total_seconds > 0
         assert eta_after_one_minute is None
 
     def test_freq__with_multiple_count(self):
-        r = self.rrule(str('MINUTELY'), dtstart=datetime.utcnow() + timedelta(minutes=1), count=2)
+        one_minute_later = datetime.utcnow() + timedelta(minutes=1)
+        two_minutes_later = datetime.utcnow() + timedelta(minutes=2)
+        r = self.rrule(str('MINUTELY'), dtstart=one_minute_later, count=2)
         eta_from_now = r.remaining_estimate(datetime.utcnow())
-        eta_after_one_minute = r.remaining_estimate(datetime.utcnow() + timedelta(minutes=1))
-        eta_after_two_minutes = r.remaining_estimate(datetime.utcnow() + timedelta(minutes=2))
+        eta_after_one_minute = r.remaining_estimate(one_minute_later)
+        eta_after_two_minutes = r.remaining_estimate(two_minutes_later)
         assert eta_from_now.total_seconds() > 0
         assert eta_after_one_minute.total_seconds() > 0
         assert eta_after_two_minutes is None
@@ -852,7 +856,8 @@ class test_rrule_is_due:
         assert next > 0
 
     def test_freq__starts_after_one_minute(self):
-        r = self.rrule(str('MINUTELY'), dtstart=datetime.utcnow() + timedelta(minutes=1))
+        one_minute_later = datetime.utcnow() + timedelta(minutes=1)
+        r = self.rrule(str('MINUTELY'), dtstart=one_minute_later)
         is_due, next = r.is_due(datetime.utcnow())
         assert not is_due
         assert next > 0

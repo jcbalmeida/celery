@@ -854,11 +854,13 @@ class solar(BaseSchedule):
 @python_2_unicode_compatible
 class rrule(BaseSchedule):
     RRULE_REPR = (
-        '<rrule: freq: {0.freq}, dtstart: {0.dtstart}, interval: {0.interval}, '
-        'wkst: {0.wkst}, count: {0.count}, until: {0.until}, bysetpos: {0.bysetpos}, '
-        'bymonth: {0.bymonth}, bymonthday: {0.bymonthday}, byyearday: {0.byyearday}, '
-        'byeaster: {0.byeaster}, byweekno: {0.byweekno}, byweekday: {0.byweekday}, '
-        'byhour: {0.byhour}, byminute: {0.byminute}, bysecond: {0.bysecond}>'
+        '<rrule: freq: {0.freq}, dtstart: {0.dtstart}, '
+        'interval: {0.interval}, wkst: {0.wkst}, count: {0.count}, '
+        'until: {0.until}, bysetpos: {0.bysetpos}, bymonth: {0.bymonth}, '
+        'bymonthday: {0.bymonthday}, byyearday: {0.byyearday}, '
+        'byeaster: {0.byeaster}, byweekno: {0.byweekno}, '
+        'byweekday: {0.byweekday}, byhour: {0.byhour}, '
+        'byminute: {0.byminute}, bysecond: {0.bysecond}>'
     )
 
     FREQ_MAP = {
@@ -904,9 +906,10 @@ class rrule(BaseSchedule):
         self.byhour = byhour
         self.byminute = byminute
         self.bysecond = bysecond
-        self.rrule = dateutil_rrule(freq, dtstart, interval, wkst, count, until,
-                                    bysetpos, bymonth, bymonthday, byyearday, byeaster,
-                                    byweekno, byweekday, byhour, byminute, bysecond)
+        self.rrule = dateutil_rrule(freq, dtstart, interval, wkst, count,
+                                    until, bysetpos, bymonth, bymonthday,
+                                    byyearday, byeaster, byweekno, byweekday,
+                                    byhour, byminute, bysecond)
 
     def remaining_estimate(self, last_run_at):
         last_run_at = self.maybe_make_aware(last_run_at)
