@@ -853,6 +853,10 @@ class solar(BaseSchedule):
 
 @python_2_unicode_compatible
 class rrule(BaseSchedule):
+    """Calendar Event
+    Reference: https://tools.ietf.org/html/rfc2445
+    Based on Marc Sibson's RedBeat implementation.
+    """
     RRULE_REPR = (
         '<rrule: freq: {0.freq}, dtstart: {0.dtstart}, '
         'interval: {0.interval}, wkst: {0.wkst}, count: {0.count}, '
